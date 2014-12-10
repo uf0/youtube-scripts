@@ -3,17 +3,17 @@ from config import *
 
 def get_reply(activityID, apiKey, writer, video):
     url = 'https://www.googleapis.com/plus/v1/activities/' + activityID + '/comments'
-    query_params = {}
-    query_params['key'] = apiKey
-    query_params['maxResults'] = 500
+    params = {}
+    params['key'] = apiKey
+    params['maxResults'] = 500
 
-    r = requests.get(url, params = query_params)
+    r = requests.get(url, params = params)
     results = r.json()['items']
     for comment in results:
         row = []
         published = comment['published']
         title = ''
-        content = comment['object']['content'].encode('utf8')
+        content = comment['object']['content'].encode('utf8') #TODO remove html content
         author = comment['actor']['displayName'].encode('utf8')
         reply = 0
 
@@ -22,9 +22,9 @@ def get_reply(activityID, apiKey, writer, video):
 
 def get_comments(url, query_params, writer, video):
     r = requests.get(url, params = query_params)
-    results = r.json()['feed']
-
+    result = r.json()['feed']
     comments = result['entry']
+
     for comment in comments:
         row = []
         published = comment['published']['$t']
@@ -42,8 +42,8 @@ def get_comments(url, query_params, writer, video):
         row.extend([video, published, title, content, author.encode('utf8'), reply])
         writer.writerow(row)
 
-        if comment['yt$googlePlusUserId'] && reply > 0:
-            activityID = comment['id'].split('/')[-1]
+        if comment['yt$googlePlusUserId'] and reply > 0:
+            activityID = comment['id']['$t'].split('/')[-1]
             get_reply(activityID, GOOGLE_API, writer, video)
 
 
@@ -84,26 +84,6 @@ def main():
 
         get_comments(site_url, query_params, writer, video)
         
-        # r = requests.get(site_url, params = query_params)
-        # result = r.json()['feed']
-
-        # comments = result['entry']
-        # for comment in comments:
-        #     row = []
-        #     published = comment['published']['$t']
-        #     title = comment['title']['$t']
-        #     content = comment['content']['$t']
-        #     author = comment['author']['name']['$t']
-        #     reply = comment['yt$replyCount']['$t']
-
-        #     row.extend([video, published, title, content, author, reply])
-        #     writer.writerow(row)
-
-        # if(result['link'][-1]['rel'] == 'next'):
-        #     next = result['link'][-1]['href']
-
-            
-
     sys.stdout.write('\x1b[2K\r')
     sys.stdout.flush()
     sys.exit()
