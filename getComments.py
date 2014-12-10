@@ -1,4 +1,5 @@
 import requests,csv,argparse,sys,re
+from config import *
 
 def get_reply(activityID, apiKey, writer, video):
     url = 'https://www.googleapis.com/plus/v1/activities/' + activityID + '/comments'
@@ -43,7 +44,7 @@ def get_comments(url, query_params, writer, video):
 
         if comment['yt$googlePlusUserId'] && reply > 0:
             activityID = comment['id'].split('/')[-1]
-            get_reply(activityID,,writer, video)
+            get_reply(activityID, GOOGLE_API, writer, video)
 
 
     if(result['link'][-1]['rel'] == 'next'):
