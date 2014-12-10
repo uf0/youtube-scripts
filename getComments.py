@@ -1,24 +1,54 @@
-import requests,csv,argparse,sys
+import requests,csv,argparse,sys,re
 
-def get_comments(url, query_params, writer):
+def get_reply(activityID, apiKey, writer, video):
+    url = 'https://www.googleapis.com/plus/v1/activities/' + activityID + '/comments'
+    query_params = {}
+    query_params['key'] = apiKey
+    query_params['maxResults'] = 500
+
     r = requests.get(url, params = query_params)
-    result = r.json()['feed']
+    results = r.json()['items']
+    for comment in results:
+        row = []
+        published = comment['published']
+        title = ''
+        content = comment['object']['content'].encode('utf8')
+        author = comment['actor']['displayName'].encode('utf8')
+        reply = 0
+
+        row.extend([video, published, title, content, author.encode('utf8'), reply])
+        writer.writerow(row)
+
+def get_comments(url, query_params, writer, video):
+    r = requests.get(url, params = query_params)
+    results = r.json()['feed']
 
     comments = result['entry']
     for comment in comments:
         row = []
         published = comment['published']['$t']
-        title = comment['title']['$t']
-        content = comment['content']['$t']
-        author = comment['author']['name']['$t']
+        title = comment['title']['$t'].replace(u'\ufeff', '').strip()
+        title = title.encode('utf8')
+        title = re.sub(r'\n', '', title)
+
+        content = comment['content']['$t'].replace(u'\ufeff', '').strip()
+        content = content.encode('utf8')
+        content = re.sub(r'\n', '', content)
+
+        author = comment['author'][0]['name']['$t']
         reply = comment['yt$replyCount']['$t']
 
-        row.extend([video, published, title, content, author, reply])
+        row.extend([video, published, title, content, author.encode('utf8'), reply])
         writer.writerow(row)
+
+        if comment['yt$googlePlusUserId'] && reply > 0:
+            activityID = comment['id'].split('/')[-1]
+            get_reply(activityID,,writer, video)
+
 
     if(result['link'][-1]['rel'] == 'next'):
         next = result['link'][-1]['href']
-        get_comments(next, '', writer)
+        get_comments(next, '', writer, video)
 
 def main():
     parser = argparse.ArgumentParser(description='getComments. Get all comments from Youtube videos')
@@ -50,6 +80,8 @@ def main():
         sys.stdout.flush()
 
         site_url = site_root + video + site_api
+
+        get_comments(site_url, query_params, writer, video)
         
         # r = requests.get(site_url, params = query_params)
         # result = r.json()['feed']
