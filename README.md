@@ -13,7 +13,7 @@ $ sudo easy_install virtualenv
 Download git repository:
 
 ``` sh
-$ git clone https://github.com/uf0/imgs-scripts.git
+$ git clone https://github.com/uf0/youtube-scripts.git
 ```
 
 browse to youtube-scripts root folder:
