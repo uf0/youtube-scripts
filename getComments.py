@@ -42,7 +42,7 @@ def get_comments(url, query_params, writer, video):
         row.extend([video, published, title, content, author.encode('utf8'), reply])
         writer.writerow(row)
 
-        if comment['yt$googlePlusUserId'] and reply > 0:
+        if 'yt$googlePlusUserId' in comment and reply > 0:
             activityID = comment['id']['$t'].split('/')[-1]
             get_reply(activityID, GOOGLE_API, writer, video)
 

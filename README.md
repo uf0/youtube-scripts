@@ -30,10 +30,10 @@ $ source env/bin/activate
 $ pip install -r requirements.txt
 ```
 
-Rename the config sample file:
+Copy the config sample file:
 
 ``` sh
-$ mv config.sample.py config.py
+$ cp config.sample.py config.py
 ```
 add add your API key
 
