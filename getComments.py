@@ -17,7 +17,7 @@ def get_reply(activityID, apiKey, writer, video):
         author = comment['actor']['displayName'].encode('utf8')
         reply = 0
 
-        row.extend([video, published, title, content, author.encode('utf8'), reply])
+        row.extend([video, published, title, content, author, reply])
         writer.writerow(row)
 
 def get_comments(url, query_params, writer, video):

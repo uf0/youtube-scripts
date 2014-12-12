@@ -35,7 +35,7 @@ Copy the config sample file:
 ``` sh
 $ cp config.sample.py config.py
 ```
-add add your API key
+open the file add your API key
 
 ##Google API key
 You need to obtain your google API key and activate the Google+ service from the [Google API Console](https://code.google.com/apis/console).
