@@ -53,5 +53,5 @@ Type `$ python getComments.py -h` for usage instructions
 **Usage example**
 
 ``` sh
-$ python -i fileWithID.tsv -o allComments.tsv
+$ python getComments.py -i fileWithID.tsv -o allComments.tsv
 ```
